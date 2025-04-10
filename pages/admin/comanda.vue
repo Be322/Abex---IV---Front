@@ -22,28 +22,6 @@
               <v-card-text>
                 <v-row>
                   <v-col>
-                    <v-text-field 
-                      v-model="comanda.data"
-                      placeholder="Data" 
-                      item-title="data" 
-                      item-value="data"
-                    />
-                  </v-col>
-                </v-row>
-
-                <v-row>
-                  <v-col>
-                    <v-text-field 
-                      v-model="comanda.hora"
-                      placeholder="Hora de Cadastro" 
-                      item-title="hora" 
-                      item-value="hora"
-                    />
-                  </v-col>
-                </v-row>
-
-                <v-row>
-                  <v-col>
                     <v-autocomplete 
                       v-model="comanda.idPedido"
                       :items="pedido" 
@@ -76,28 +54,6 @@
                 Editar
               </v-card-title>
               <v-card-text>
-                <v-row>
-                  <v-col>
-                    <v-text-field 
-                      v-model="comanda.data"
-                      placeholder="Nome" 
-                      item-title="nome" 
-                      item-value="nome"
-                    />
-                  </v-col>
-                </v-row>
-
-                <v-row>
-                  <v-col>
-                    <v-text-field 
-                      v-model="comanda.hora"  
-                      placeholder="Nome" 
-                      item-title="nome" 
-                      item-value="nome"
-                    />
-                  </v-col>
-                </v-row>
-
                 <v-row>
                   <v-col>
                     <v-autocomplete 
@@ -136,8 +92,6 @@
           search: "",
           comanda: {
             id: null,
-            data: null,
-            hora: null,
             idPedido: null,
           },
           headers: [
@@ -146,12 +100,12 @@
               key: "id",
             },
             {
-              title: "Hora de Pedido",
-              key: "hora",
+              title: "Pedido",
+              key: "idPedido",
             },
             {
               title: "",
-              key: "action",
+              key: "action",  
               sortable: false,
             },
           ],
@@ -187,8 +141,6 @@
         resetUsuario() {
           this.comanda = {
             id: null,
-            data: null,
-            hora: null,
             idPedido: null,
           };
           this.ativo = false;
@@ -205,24 +157,6 @@
           } finally {
             this.loading = false;
             console.log("dados carregados");
-          }
-        },
-
-        async getIdPedido() {
-          this.loading = true;
-          try {
-            const response = await this.$api.get(`/pedido`);            
-            this.pedido = response.response;
-            this.pedido = this.pedido.map((item) => {
-              return {
-                label: item.id,
-                id: item.id,
-              };
-            });            
-          } catch (error) {
-            console.error("Erro ao carregar itens:", error);
-          } finally {
-            console.log("pedido carregados");
           }
         },
 

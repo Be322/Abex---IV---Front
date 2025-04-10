@@ -8,8 +8,8 @@
             :headers="headers" 
             @editou="editItem" 
             @deletou="deleteItem"
-            @abrir-dialog="() => ativo = true" 
-            @dialog-edit="() => ativo = true"
+            @abrir-dialog="() => abrirDialog()" 
+            @dialog-edit="() => ativo2 = true"
           />
           <v-dialog 
             v-model="ativo" 
@@ -65,6 +65,17 @@
 
                 <v-row>
                   <v-col>
+                    <v-text-field 
+                      v-model="produto.idCategoria"
+                      placeholder="Quantidade" 
+                      item-title="idCategoria" 
+                      item-value="idCategoria"
+                    />
+                  </v-col>
+                </v-row>
+
+                <v-row>
+                  <v-col>
                     <img :src="produto.imagem" style="max-width: 100px; max-height: 100px">
                   </v-col>
                   <v-col class="justify-center align-center text-center" cols="8" sm="6" style="justify-content: center;">
@@ -75,11 +86,11 @@
                 <v-row>
                   <v-col>
                     <v-autocomplete 
-                      v-model="produto.idPedido"
-                      :items="pedido" 
-                      placeholder="pedido"
+                      v-model="produto.idCategoria"
+                      :items="produto" 
+                      placeholder="produto"
                       item-title="label" 
-                      item-value="idPedido"
+                      item-value="idCategoria"
                     />
                   </v-col>
                 </v-row>
@@ -160,11 +171,11 @@
                 <v-row>
                   <v-col>
                     <v-autocomplete 
-                      v-model="produto.idPedido"
-                      :items="pedido" 
-                      placeholder="pedido"
+                      v-model="produto.idCategoria"
+                      :items="produto" 
+                      placeholder="produto"
                       item-title="label" 
-                      item-value="idPedido"
+                      item-value="idCategoria"
                     />
                   </v-col>
                 </v-row>
@@ -197,10 +208,9 @@
             id: null, 
             nome: null, 
             descricaoProduto: null, 
-            quantidade: null, 
             valor: null,
             imagem: null, 
-            idPedido: null,
+            idCategoria: null,
           },
           headers: [
             {
@@ -212,8 +222,8 @@
               key: "nome",
             },
             {
-              title: "Quantidade Requisitada",
-              key: "quantidade",
+              title: "Valor",
+              key: "valor",
             },
             {
               title: "",
@@ -222,19 +232,19 @@
             },
           ],
           items: [],
-          cpfs: [],
+          categoria: [],
         };
       },
 
       watch: {
         ativo(valor) {
           if (valor == false) {
-            this.resetUsuario();
+            this.resetProduto();
           }
         },
         ativo2(valor) {
           if (valor == false) {
-            this.resetUsuario();
+            this.resetProduto();
           }
         },
         resetTabela() {
@@ -246,19 +256,18 @@
 
       async created() {
         await this.getItems();
-        await this.getIdPedido();
+        await this.getIdCategoria();
       },
 
       methods: {
-        resetUsuario() {
+        resetProduto() {
           this.produto = {
             id: null, 
             nome: null, 
             descricaoProduto: null, 
-            quantidade: null, 
             valor: null,
             imagem: null, 
-            idPedido: null,
+            idCategoria: null,
           };
           this.ativo = false;
           this.ativo2 = false;
@@ -277,21 +286,34 @@
           }
         },
 
-        async getIdPedido() {
+        async getIdCategoria() {
           this.loading = true;
           try {
-            const response = await this.$api.get(`/pedido`);            
-            this.pedido = response.response;
-            this.pedido = this.pedido.map((item) => {
+            const response = await this.$api.get("/categoria");
+            this.categoria = response.response;
+          } catch (error) {
+            console.error("Erro ao carregar itens:", error);
+          } finally {
+            this.loading = false;
+            console.log(this.categoria);
+              console.log("dados carregados");
+          }
+        },
+
+        async getidCategoria() {
+          this.loading = true;
+          try {
+            const response = await this.$api.get(`/produto`);            
+            this.produto = response.response;
+            this.produto = this.produto.map((item) => {
               return {
-                label: item.id,
                 id: item.id,
               };
             });            
           } catch (error) {
             console.error("Erro ao carregar itens:", error);
           } finally {
-            console.log("pedido carregados");
+            console.log("produto carregados");
           }
         },
 
@@ -302,18 +324,22 @@
           this.ativo2 = true;
         },
 
+        abrirDialog() {
+          this.ativo = true;
+        },
+
         async create() {
           const response = await this.$api.post("/produto/create", this.produto);
           console.log("Criando item");
           await this.getItems();
-          this.resetUsuario();
+          this.resetProduto();
         },
 
         async edit() {
           const response = await this.$api.patch(`/produto/update/${this.produto.id}`, this.produto);
           console.log("Editando item");
           await this.getItems();
-          this.resetUsuario();
+          this.resetProduto();
         },
 
         async deleteItem(item) {  

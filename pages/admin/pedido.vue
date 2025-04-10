@@ -104,7 +104,9 @@
           search: "",
           pedido: {
             id: null,
-            cpfUsuario: null,
+            quantidade: null,
+            idToken: null,
+            idProduto: null,  
           },
           headers: [
             {
@@ -112,8 +114,16 @@
               key: "id",
             },
             {
-              title: "CPF",
-              key: "cpfUsuario",
+              title: "Quantidade",
+              key: "quantidade",
+            },
+            {
+              title: "Produto",
+              key: "idProduto",
+            },
+            {
+              title: "Token",
+              key: "idToken",
             },
             {
               title: "",
@@ -122,7 +132,6 @@
             },
           ],
           items: [],
-          cpfs: [],
         };
       },
 
@@ -153,7 +162,9 @@
         resetUsuario() {
           this.pedido = {
             id: null,
-            cpfUsuario: null,
+            quantidade: null,
+            idToken: null,
+            idProduto: null,
           };
           this.ativo = false;
           this.ativo2 = false;
@@ -169,24 +180,6 @@
           } finally {
             this.loading = false;
             console.log("dados carregados");
-          }
-        },
-
-        async getCpf() {
-          this.loading = true;
-          try {
-            const response = await this.$api.get(`/usuario`);            
-            this.cpfs = response.response;
-            this.cpfs = this.cpfs.map((item) => {
-              return {
-                label: item.cpf,
-                cpf: item.cpf,
-              };
-            });            
-          } catch (error) {
-            console.error("Erro ao carregar itens:", error);
-          } finally {
-            console.log("cpfs carregados");
           }
         },
 

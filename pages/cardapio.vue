@@ -20,7 +20,7 @@
           
           <a href="http://localhost:3000/login">
             <v-icon class="signOut" style="margin-right: 50px;">
-              mdi-login
+              mdi-account
             </v-icon>
           </a>
         </v-tabs>
@@ -41,31 +41,60 @@
           >
             <v-img
               height="225px"
-              :src="imagem[index]"
+              :src="item.imagem"
               cover
             />
     
             <v-card-title>
-              {{ nome[index] }}
+              {{ item.nome }}
             </v-card-title>
     
             <v-card-subtitle>
-              {{ descricao[index] }}
+              {{ item.descricaoProduto }}
             </v-card-subtitle>
     
             <v-card-actions>
               <v-btn
                 color="orange-lighten-2"
                 text="Requisitar"
+                @click="openDialog(items.id)"
               />
     
               <v-spacer/>
     
               <v-card-text>
-                R$ {{ valor[index] }}
+                R$ {{ item.valor }}
               </v-card-text>
             </v-card-actions>
           </v-card>
+
+          <v-dialog v-model="ativo" max-width="500">
+            <v-card height="550" width="500" theme="dark">
+              <v-card-title>
+                aa {{ produtos.id }}
+              </v-card-title>
+              
+              <!-- <v-card-text>
+                <v-row>
+                  <v-col>
+                    
+                    <v-text-field 
+                      v-model="servico.nome"
+                      placeholder="Tipo de Serviço" 
+                      item-title="data" 
+                      item-value="data"
+                    />
+                  </v-col>
+                </v-row>
+              </v-card-text> -->
+
+              <v-card-actions>
+                <v-btn variant="outlined" class="text-none" @click="persist()">
+                  Enviar
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-col>
       </v-row>
 
@@ -79,11 +108,11 @@
       tab: 2,
       show: false,
       items: [],
+      ativo: false,
       loading: false,
-      valor: [],
-      descricao: [],
-      nome: [],
-      imagem: [],
+      produtos: {
+        id: null,
+      },
     }),
 
     async created() {
@@ -96,26 +125,16 @@
         try {
           const response = await this.$api.get("/produto");
           this.items = response.response;
-
-          this.items.forEach((item) => {
-            this.valor.push(item.valor);
-            console.log(item.valor);
-            
-            this.descricao.push(item.descricaoProduto);
-            console.log(item.descricaoProduto);
-
-            this.nome.push(item.nome);
-            console.log(item.nome);
-            
-            this.imagem.push(item.imagem);
-            console.log(item.imagem);
-          });
         } catch (error) {
           console.error("Erro ao carregar itens:", error);
         } finally {
           this.loading = false;
           console.log("dados carregados");
         }
+      },
+
+      openDialog() {
+        this.ativo = true;
       },
     },
   }
